@@ -2,6 +2,7 @@ export interface SubTask {
   title: string;
   description: string;
   completed?: boolean;
+  locked?: boolean;
 }
 
 export interface Step {

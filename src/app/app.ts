@@ -121,7 +121,40 @@ export class App {
   ];
 
   constructor() {
+    this.loadProgress();
     this.updateStepLocks();
+  }
+
+  saveProgress(): void {
+    const progress = this.steps.map(step => ({
+      id: step.id,
+      expanded: step.expanded,
+      subTasks: step.subTasks.map(task => ({
+        completed: task.completed
+      }))
+    }));
+    localStorage.setItem('socialMediaBlueprint_progress', JSON.stringify(progress));
+  }
+
+  loadProgress(): void {
+    const savedProgress = localStorage.getItem('socialMediaBlueprint_progress');
+    if (savedProgress) {
+      try {
+        const progress = JSON.parse(savedProgress);
+        progress.forEach((savedStep: any, index: number) => {
+          if (this.steps[index] && this.steps[index].id === savedStep.id) {
+            this.steps[index].expanded = savedStep.expanded;
+            savedStep.subTasks.forEach((savedTask: any, taskIndex: number) => {
+              if (this.steps[index].subTasks[taskIndex]) {
+                this.steps[index].subTasks[taskIndex].completed = savedTask.completed;
+              }
+            });
+          }
+        });
+      } catch (e) {
+        console.error('Failed to load progress:', e);
+      }
+    }
   }
 
   isStepComplete(step: Step): boolean {
@@ -148,12 +181,14 @@ export class App {
     const step = this.steps.find(s => s.id === stepId);
     if (step && !step.locked) {
       step.expanded = !step.expanded;
+      this.saveProgress();
     }
   }
 
   onSubTaskToggle(): void {
     // Update locks whenever a subtask is toggled
     this.updateStepLocks();
+    this.saveProgress();
   }
 
   jumpToStep(): void {
@@ -189,5 +224,17 @@ export class App {
     };
     this.steps.push(newStep);
     this.updateStepLocks();
+  }
+
+  unlockAll(): void {
+    this.steps = this.steps.map(step => ({
+      ...step,
+      locked: false,
+      subTasks: step.subTasks.map(task => ({
+        ...task,
+        locked: false
+      }))
+    }));
+    this.saveProgress();
   }
 }

@@ -30,13 +30,23 @@
   font-weight: 400;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  max-width: 700px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
 .jump-to-step {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  max-width: 400px;
-  margin: 0 auto;
+  flex: 1;
+  min-width: 300px;
 }
 
 .step-input {
@@ -86,6 +96,34 @@
   transform: translateY(0);
 }
 
+.unlock-all-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+
+.unlock-all-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.unlock-all-button:active {
+  transform: translateY(0);
+}
+
 .main-content {
   max-width: 900px;
   margin: 0 auto;
@@ -124,13 +162,21 @@
     font-size: 16px;
   }
 
-  .jump-to-step {
+  .header-actions {
     flex-direction: column;
     max-width: 100%;
   }
 
+  .jump-to-step {
+    flex-direction: column;
+    max-width: 100%;
+    width: 100%;
+    min-width: auto;
+  }
+
   .step-input,
-  .jump-button {
+  .jump-button,
+  .unlock-all-button {
     width: 100%;
   }
 

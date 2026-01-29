@@ -132,6 +132,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .subtask-item:hover {
@@ -143,6 +144,35 @@
   opacity: 0.6;
   background: #e8f5e9;
   border-color: #c8e6c9;
+}
+
+.subtask-item.locked {
+  opacity: 0.5;
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.subtask-item.locked:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+.subtask-number {
+  font-weight: 600;
+  color: #667eea;
+  min-width: 24px;
+  padding-top: 2px;
+  font-size: 14px;
+}
+
+.subtask-item.completed .subtask-number {
+  color: #9ca3af;
+}
+
+.subtask-item.locked .subtask-number {
+  color: #d1d5db;
 }
 
 .subtask-checkbox {
@@ -157,6 +187,15 @@
   width: 20px;
   height: 20px;
   accent-color: #667eea;
+}
+
+.subtask-lock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  width: 20px;
+  height: 20px;
 }
 
 .subtask-content {
