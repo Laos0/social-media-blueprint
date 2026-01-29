@@ -1,0 +1,41 @@
+<div class="app-container">
+  <header class="header">
+    <h1 class="title">{{ title() }}</h1>
+    <p class="subtitle">Your step-by-step guide to creating and scaling profitable social media accounts</p>
+
+    <div class="jump-to-step">
+      <input
+        type="number"
+        [(ngModel)]="jumpToStepNumber"
+        placeholder="Enter step number"
+        class="step-input"
+        min="1"
+        [max]="steps.length"
+        (keyup.enter)="jumpToStep()"
+      >
+      <button class="jump-button" (click)="jumpToStep()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4L12 20M12 4L18 10M12 4L6 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Jump to Step
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="steps-container">
+      @for (step of steps; track step.id; let i = $index) {
+        <app-step
+          [step]="step"
+          [stepNumber]="i + 1"
+          (toggleExpand)="toggleStep($event)"
+          (subTaskToggled)="onSubTaskToggle()"
+        ></app-step>
+      }
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Built with Angular | Total Steps: {{ steps.length }}</p>
+  </footer>
+</div>
