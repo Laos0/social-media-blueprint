@@ -1,0 +1,16 @@
+@if (show) {
+  <div class="modal-overlay" (click)="onOverlayClick()">
+    <div class="modal-content" (click)="onContentClick($event)">
+      <div class="modal-header">
+        <h2 class="modal-title">Reset All Progress?</h2>
+      </div>
+      <div class="modal-body">
+        <p>This will clear all completed tasks and saved progress. This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button cancel-button" (click)="onCancel()">Cancel</button>
+        <button class="modal-button confirm-button" (click)="onConfirm()">Reset</button>
+      </div>
+    </div>
+  </div>
+}

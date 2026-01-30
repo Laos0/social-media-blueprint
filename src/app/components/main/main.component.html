@@ -1,0 +1,27 @@
+<div class="app-container">
+  <app-header
+    [title]="title()"
+    [totalSteps]="steps().length"
+    [isUnlockedAll]="isUnlockedAll()"
+    [hasProgress]="hasAnyProgress()"
+    (jumpToStep)="onJumpToStep($event)"
+    (unlockAllToggle)="onUnlockAllToggle()"
+    (resetProgress)="onOpenResetModal()"
+  ></app-header>
+
+  <app-steps-list
+    [steps]="steps()"
+    (toggleExpand)="onToggleStep($event)"
+    (subTaskToggled)="onSubTaskToggle()"
+  ></app-steps-list>
+
+  <app-footer
+    [totalSteps]="steps().length"
+  ></app-footer>
+
+  <app-reset-modal
+    [show]="showResetModal"
+    (cancel)="onCloseResetModal()"
+    (confirm)="onConfirmReset()"
+  ></app-reset-modal>
+</div>

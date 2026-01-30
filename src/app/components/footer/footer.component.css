@@ -1,0 +1,20 @@
+.footer {
+  background: #1f2937;
+  color: white;
+  text-align: center;
+  padding: 24px;
+  margin-top: 48px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .footer {
+    background: #0f1419;
+  }
+}

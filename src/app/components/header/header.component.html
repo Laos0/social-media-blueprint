@@ -1,0 +1,13 @@
+<header class="header">
+  <h1 class="title">{{ title }}</h1>
+  <p class="subtitle">Your step-by-step guide to creating and scaling profitable social media accounts</p>
+
+  <app-header-actions
+    [totalSteps]="totalSteps"
+    [isUnlockedAll]="isUnlockedAll"
+    [hasProgress]="hasProgress"
+    (jumpToStep)="onJumpToStep($event)"
+    (unlockAllToggle)="onUnlockAllToggle()"
+    (resetProgress)="onResetProgress()"
+  ></app-header-actions>
+</header>
