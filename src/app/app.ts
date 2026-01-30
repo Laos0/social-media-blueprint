@@ -267,6 +267,12 @@ export class App {
     this.saveProgress();
   }
 
+  hasAnyProgress(): boolean {
+    return this.steps.some(step =>
+      step.subTasks.some(task => task.completed)
+    );
+  }
+
   openResetModal(): void {
     this.showResetModal = true;
   }
