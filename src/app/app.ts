@@ -195,7 +195,14 @@ export class App {
   toggleStep(stepId: string): void {
     const step = this.steps.find(s => s.id === stepId);
     if (step && !step.locked) {
-      step.expanded = !step.expanded;
+      const wasExpanded = step.expanded;
+
+      // Close all steps
+      this.steps.forEach(s => s.expanded = false);
+
+      // Toggle the clicked step (if it was closed, open it)
+      step.expanded = !wasExpanded;
+
       this.saveProgress();
     }
   }
