@@ -209,10 +209,6 @@
   color: #1f2937;
 }
 
-.subtask-item.completed .subtask-title {
-  text-decoration: line-through;
-}
-
 .subtask-description {
   margin: 0;
   color: #6b7280;

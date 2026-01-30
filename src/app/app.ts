@@ -13,6 +13,8 @@ import { Step } from './models/checklist.model';
 export class App {
   protected readonly title = signal('Social Media Blueprint');
   protected jumpToStepNumber = '';
+  protected isUnlockedAll = false;
+  protected showResetModal = false;
 
   // Sample data - developers can easily add more steps here
   protected steps: Step[] = [
@@ -126,13 +128,16 @@ export class App {
   }
 
   saveProgress(): void {
-    const progress = this.steps.map(step => ({
-      id: step.id,
-      expanded: step.expanded,
-      subTasks: step.subTasks.map(task => ({
-        completed: task.completed
+    const progress = {
+      isUnlockedAll: this.isUnlockedAll,
+      steps: this.steps.map(step => ({
+        id: step.id,
+        expanded: step.expanded,
+        subTasks: step.subTasks.map(task => ({
+          completed: task.completed
+        }))
       }))
-    }));
+    };
     localStorage.setItem('socialMediaBlueprint_progress', JSON.stringify(progress));
   }
 
@@ -141,7 +146,12 @@ export class App {
     if (savedProgress) {
       try {
         const progress = JSON.parse(savedProgress);
-        progress.forEach((savedStep: any, index: number) => {
+
+        // Handle both old and new format
+        const steps = progress.steps || progress;
+        this.isUnlockedAll = progress.isUnlockedAll || false;
+
+        steps.forEach((savedStep: any, index: number) => {
           if (this.steps[index] && this.steps[index].id === savedStep.id) {
             this.steps[index].expanded = savedStep.expanded;
             savedStep.subTasks.forEach((savedTask: any, taskIndex: number) => {
@@ -162,6 +172,11 @@ export class App {
   }
 
   updateStepLocks(): void {
+    // Don't update locks if everything is unlocked
+    if (this.isUnlockedAll) {
+      return;
+    }
+
     // Create a new array with new object references to force change detection
     this.steps = this.steps.map((step, i) => {
       if (i === 0) {
@@ -227,14 +242,61 @@ export class App {
   }
 
   unlockAll(): void {
+    this.isUnlockedAll = !this.isUnlockedAll;
+
+    if (this.isUnlockedAll) {
+      // Unlock everything
+      this.steps = this.steps.map(step => ({
+        ...step,
+        locked: false,
+        subTasks: step.subTasks.map(task => ({
+          ...task,
+          locked: false
+        }))
+      }));
+    } else {
+      // Return to normal locked state based on completion
+      this.updateStepLocks();
+      // Trigger subtask lock updates by creating new references
+      this.steps = this.steps.map(step => ({
+        ...step,
+        subTasks: [...step.subTasks]
+      }));
+    }
+
+    this.saveProgress();
+  }
+
+  openResetModal(): void {
+    this.showResetModal = true;
+  }
+
+  closeResetModal(): void {
+    this.showResetModal = false;
+  }
+
+  confirmReset(): void {
+    // Reset all completion states
     this.steps = this.steps.map(step => ({
       ...step,
-      locked: false,
+      expanded: false,
       subTasks: step.subTasks.map(task => ({
         ...task,
+        completed: false,
         locked: false
       }))
     }));
-    this.saveProgress();
+
+    // Reset unlock state
+    this.isUnlockedAll = false;
+
+    // Clear localStorage
+    localStorage.removeItem('socialMediaBlueprint_progress');
+
+    // Re-apply normal locking
+    this.updateStepLocks();
+
+    // Close modal
+    this.showResetModal = false;
   }
 }
