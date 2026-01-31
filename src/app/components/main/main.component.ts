@@ -1,7 +1,8 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { StepsListComponent } from '../steps-list/steps-list.component';
+import { StepNavigationComponent } from '../step-navigation/step-navigation.component';
 import { FooterComponent } from '../footer/footer.component';
 import { ResetModalComponent } from '../reset-modal/reset-modal.component';
 import { StepManagementService } from '../../services/step-management.service';
@@ -10,7 +11,7 @@ import { Step } from '../../models/checklist.model';
 
 @Component({
   selector: 'app-main',
-  imports: [CommonModule, HeaderComponent, StepsListComponent, FooterComponent, ResetModalComponent],
+  imports: [CommonModule, HeaderComponent, StepsListComponent, StepNavigationComponent, FooterComponent, ResetModalComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
@@ -448,12 +449,36 @@ export class MainComponent {
     return this.stepManagementService.steps;
   }
 
+  protected get currentStep() {
+    return this.stepManagementService.currentStep;
+  }
+
+  protected get currentStepIndex() {
+    return this.stepManagementService.currentStepIndex;
+  }
+
+  protected get totalSteps() {
+    return this.stepManagementService.totalSteps;
+  }
+
   protected get isUnlockedAll() {
     return this.stepManagementService.isUnlockedAll;
   }
 
   protected get hasAnyProgress() {
     return this.stepManagementService.hasAnyProgress;
+  }
+
+  protected get canGoBack() {
+    return this.stepManagementService.canGoBack;
+  }
+
+  protected get canGoNext() {
+    return this.stepManagementService.canGoNext;
+  }
+
+  protected get progressPercentage() {
+    return this.stepManagementService.progressPercentage;
   }
 
   private initializeApp(): void {
@@ -476,6 +501,11 @@ export class MainComponent {
       // Initialize service with restored data
       this.stepManagementService.initializeSteps(this.initialSteps);
 
+      // Restore current step index
+      if (savedProgress.currentStepIndex !== undefined) {
+        this.stepManagementService.setCurrentStepIndex(savedProgress.currentStepIndex);
+      }
+
       // Restore unlock state
       if (savedProgress.isUnlockedAll) {
         this.stepManagementService.unlockAll();
@@ -487,11 +517,12 @@ export class MainComponent {
   }
 
   private setupAutoSave(): void {
-    // Auto-save whenever steps change
+    // Auto-save whenever steps or current step changes
     effect(() => {
       const steps = this.steps();
       const isUnlockedAll = this.isUnlockedAll();
-      this.progressStorageService.saveProgress(steps, isUnlockedAll);
+      const currentStepIndex = this.currentStepIndex();
+      this.progressStorageService.saveProgress(steps, isUnlockedAll, currentStepIndex);
     });
   }
 
@@ -523,5 +554,43 @@ export class MainComponent {
     this.stepManagementService.resetProgress();
     this.progressStorageService.clearProgress();
     this.showResetModal = false;
+  }
+
+  // Navigation handlers
+  protected onNextStep(): void {
+    this.stepManagementService.nextStep();
+  }
+
+  protected onPreviousStep(): void {
+    this.stepManagementService.previousStep();
+  }
+
+  // Keyboard navigation
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardNavigation(event: KeyboardEvent): void {
+    // Don't trigger if user is typing in an input
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      return;
+    }
+
+    // Don't trigger if modal is open
+    if (this.showResetModal) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        if (this.canGoBack()) {
+          this.onPreviousStep();
+        }
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        if (this.canGoNext()) {
+          this.onNextStep();
+        }
+        break;
+    }
   }
 }

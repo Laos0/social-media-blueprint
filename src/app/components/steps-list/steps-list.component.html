@@ -1,9 +1,9 @@
 <main class="main-content">
   <div class="steps-container">
-    @for (step of steps; track step.id; let i = $index) {
+    @if (currentStep) {
       <app-step
-        [step]="step"
-        [stepNumber]="i + 1"
+        [step]="currentStep"
+        [stepNumber]="currentStepNumber"
         (toggleExpand)="onToggleStep($event)"
         (subTaskToggled)="onSubTaskToggle()"
       ></app-step>

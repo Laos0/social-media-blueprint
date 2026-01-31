@@ -1,7 +1,7 @@
 <div class="app-container">
   <app-header
     [title]="title()"
-    [totalSteps]="steps().length"
+    [totalSteps]="totalSteps()"
     [isUnlockedAll]="isUnlockedAll()"
     [hasProgress]="hasAnyProgress()"
     (jumpToStep)="onJumpToStep($event)"
@@ -9,14 +9,27 @@
     (resetProgress)="onOpenResetModal()"
   ></app-header>
 
-  <app-steps-list
-    [steps]="steps()"
-    (toggleExpand)="onToggleStep($event)"
-    (subTaskToggled)="onSubTaskToggle()"
-  ></app-steps-list>
+  <div class="content-wrapper">
+    <app-step-navigation
+      [currentStepNumber]="currentStepIndex() + 1"
+      [totalSteps]="totalSteps()"
+      [canGoBack]="canGoBack()"
+      [canGoNext]="canGoNext()"
+      [progressPercentage]="progressPercentage()"
+      (next)="onNextStep()"
+      (previous)="onPreviousStep()"
+    ></app-step-navigation>
+
+    <app-steps-list
+      [currentStep]="currentStep()"
+      [currentStepNumber]="currentStepIndex() + 1"
+      (toggleExpand)="onToggleStep($event)"
+      (subTaskToggled)="onSubTaskToggle()"
+    ></app-steps-list>
+  </div>
 
   <app-footer
-    [totalSteps]="steps().length"
+    [totalSteps]="totalSteps()"
   ></app-footer>
 
   <app-reset-modal

@@ -7,16 +7,50 @@ import { Step } from '../models/checklist.model';
 export class StepManagementService {
   private stepsSignal = signal<Step[]>([]);
   private isUnlockedAllSignal = signal<boolean>(false);
+  private currentStepIndexSignal = signal<number>(0);
 
   // Public read-only access to signals
   readonly steps = this.stepsSignal.asReadonly();
   readonly isUnlockedAll = this.isUnlockedAllSignal.asReadonly();
+  readonly currentStepIndex = this.currentStepIndexSignal.asReadonly();
 
-  // Computed signal to check if there's any progress
+  // Computed signals
   readonly hasAnyProgress = computed(() => {
     return this.stepsSignal().some(step =>
       step.subTasks.some(task => task.completed)
     );
+  });
+
+  readonly currentStep = computed(() => {
+    const steps = this.stepsSignal();
+    const index = this.currentStepIndexSignal();
+    return steps[index] || null;
+  });
+
+  readonly totalSteps = computed(() => this.stepsSignal().length);
+
+  readonly canGoBack = computed(() => this.currentStepIndexSignal() > 0);
+
+  readonly canGoNext = computed(() => {
+    const currentIndex = this.currentStepIndexSignal();
+    const totalSteps = this.stepsSignal().length;
+    const currentStep = this.stepsSignal()[currentIndex];
+
+    // Can always go next if unlocked all
+    if (this.isUnlockedAllSignal()) {
+      return currentIndex < totalSteps - 1;
+    }
+
+    // Can go next if current step is complete and not on last step
+    return currentIndex < totalSteps - 1 && (!currentStep || this.isStepComplete(currentStep));
+  });
+
+  readonly progressPercentage = computed(() => {
+    const steps = this.stepsSignal();
+    if (steps.length === 0) return 0;
+
+    const completedSteps = steps.filter(step => this.isStepComplete(step)).length;
+    return Math.round((completedSteps / steps.length) * 100);
   });
 
   initializeSteps(steps: Step[]): void {
@@ -114,6 +148,9 @@ export class StepManagementService {
     // Reset unlock state
     this.isUnlockedAllSignal.set(false);
 
+    // Reset to first step
+    this.currentStepIndexSignal.set(0);
+
     // Update steps
     this.stepsSignal.set(resetSteps);
 
@@ -121,27 +158,54 @@ export class StepManagementService {
     this.updateStepLocks();
   }
 
-  jumpToStep(stepNumber: number): void {
-    const currentSteps = this.stepsSignal();
+  nextStep(): void {
+    const currentIndex = this.currentStepIndexSignal();
+    const totalSteps = this.stepsSignal().length;
 
-    if (stepNumber > 0 && stepNumber <= currentSteps.length) {
-      const step = currentSteps[stepNumber - 1];
+    if (this.canGoNext()) {
+      this.currentStepIndexSignal.set(currentIndex + 1);
+      this.scrollToTop();
+    }
+  }
 
-      if (!step.locked) {
-        const updatedSteps = currentSteps.map((s, index) => ({
-          ...s,
-          expanded: index === stepNumber - 1
-        }));
-        this.stepsSignal.set(updatedSteps);
+  previousStep(): void {
+    const currentIndex = this.currentStepIndexSignal();
 
-        // Wait for DOM to update then scroll
-        setTimeout(() => {
-          const element = document.getElementById(`step-${step.id}`);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
+    if (this.canGoBack()) {
+      this.currentStepIndexSignal.set(currentIndex - 1);
+      this.scrollToTop();
+    }
+  }
+
+  goToStep(stepNumber: number): void {
+    const stepIndex = stepNumber - 1; // Convert 1-based to 0-based
+    const steps = this.stepsSignal();
+
+    if (stepIndex >= 0 && stepIndex < steps.length) {
+      const targetStep = steps[stepIndex];
+
+      // Allow if unlocked all, or if step is not locked
+      if (this.isUnlockedAllSignal() || !targetStep.locked) {
+        this.currentStepIndexSignal.set(stepIndex);
+        this.scrollToTop();
       }
     }
+  }
+
+  setCurrentStepIndex(index: number): void {
+    const steps = this.stepsSignal();
+    if (index >= 0 && index < steps.length) {
+      this.currentStepIndexSignal.set(index);
+    }
+  }
+
+  private scrollToTop(): void {
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Legacy method for backward compatibility (now uses goToStep)
+  jumpToStep(stepNumber: number): void {
+    this.goToStep(stepNumber);
   }
 }

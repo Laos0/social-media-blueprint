@@ -8,6 +8,19 @@
   background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
 }
 
+.content-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 24px 16px;
+  }
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .app-container {

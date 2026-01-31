@@ -10,7 +10,8 @@ import { Step } from '../../models/checklist.model';
   styleUrl: './steps-list.component.css'
 })
 export class StepsListComponent {
-  @Input() steps: Step[] = [];
+  @Input() currentStep: Step | null = null;
+  @Input() currentStepNumber = 1;
 
   @Output() toggleExpand = new EventEmitter<string>();
   @Output() subTaskToggled = new EventEmitter<void>();

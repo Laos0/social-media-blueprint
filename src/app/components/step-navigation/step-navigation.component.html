@@ -1,0 +1,43 @@
+<div class="navigation-container">
+  <div class="progress-section">
+    <div class="step-counter">
+      <span class="current-step">Step {{ currentStepNumber }}</span>
+      <span class="step-separator">of</span>
+      <span class="total-steps">{{ totalSteps }}</span>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+    </div>
+
+    <div class="progress-text">{{ progressPercentage }}% Complete</div>
+  </div>
+
+  <div class="navigation-buttons">
+    <button
+      class="nav-button prev-button"
+      [class.disabled]="!canGoBack"
+      [disabled]="!canGoBack"
+      (click)="onPrevious()"
+      aria-label="Previous step"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Previous</span>
+    </button>
+
+    <button
+      class="nav-button next-button"
+      [class.disabled]="!canGoNext"
+      [disabled]="!canGoNext"
+      (click)="onNext()"
+      aria-label="Next step"
+    >
+      <span>Next</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>

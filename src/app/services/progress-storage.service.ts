@@ -3,6 +3,7 @@ import { Step } from '../models/checklist.model';
 
 export interface ProgressData {
   isUnlockedAll: boolean;
+  currentStepIndex?: number;
   steps: Array<{
     id: string;
     expanded: boolean;
@@ -18,9 +19,10 @@ export interface ProgressData {
 export class ProgressStorageService {
   private readonly STORAGE_KEY = 'socialMediaBlueprint_progress';
 
-  saveProgress(steps: Step[], isUnlockedAll: boolean): void {
+  saveProgress(steps: Step[], isUnlockedAll: boolean, currentStepIndex: number = 0): void {
     const progress: ProgressData = {
       isUnlockedAll,
+      currentStepIndex,
       steps: steps.map(step => ({
         id: step.id,
         expanded: step.expanded || false,
@@ -49,6 +51,7 @@ export class ProgressStorageService {
       // Handle both old and new format for backwards compatibility
       return {
         isUnlockedAll: progress.isUnlockedAll || false,
+        currentStepIndex: progress.currentStepIndex ?? 0,
         steps: progress.steps || progress
       };
     } catch (error) {
