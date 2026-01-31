@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { StepsListComponent } from '../steps-list/steps-list.component';
 import { StepNavigationComponent } from '../step-navigation/step-navigation.component';
+import { StepsSidebar } from '../steps-sidebar/steps-sidebar';
 import { FooterComponent } from '../footer/footer.component';
 import { ResetModalComponent } from '../reset-modal/reset-modal.component';
 import { StepManagementService } from '../../services/step-management.service';
@@ -11,13 +12,14 @@ import { Step } from '../../models/checklist.model';
 
 @Component({
   selector: 'app-main',
-  imports: [CommonModule, HeaderComponent, StepsListComponent, StepNavigationComponent, FooterComponent, ResetModalComponent],
+  imports: [CommonModule, HeaderComponent, StepsListComponent, StepNavigationComponent, StepsSidebar, FooterComponent, ResetModalComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
 export class MainComponent {
   protected readonly title = signal('Social Media Blueprint');
   protected showResetModal = false;
+  protected sidebarMobileOpen = false;
 
   // Sample data - developers can easily add more steps here
   private readonly initialSteps: Step[] = [
@@ -563,6 +565,20 @@ export class MainComponent {
 
   protected onPreviousStep(): void {
     this.stepManagementService.previousStep();
+  }
+
+  // Sidebar handlers
+  protected onSidebarNavigate(stepNumber: number): void {
+    this.stepManagementService.jumpToStep(stepNumber);
+    this.sidebarMobileOpen = false; // Close sidebar on mobile after navigation
+  }
+
+  protected onCloseSidebar(): void {
+    this.sidebarMobileOpen = false;
+  }
+
+  protected onToggleSidebar(): void {
+    this.sidebarMobileOpen = !this.sidebarMobileOpen;
   }
 
   // Keyboard navigation

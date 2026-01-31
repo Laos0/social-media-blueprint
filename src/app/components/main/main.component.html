@@ -9,7 +9,17 @@
     (resetProgress)="onOpenResetModal()"
   ></app-header>
 
-  <div class="content-wrapper">
+  <div class="main-layout">
+    <app-steps-sidebar
+      [steps]="steps()"
+      [currentStepIndex]="currentStepIndex()"
+      [isUnlockedAll]="isUnlockedAll()"
+      [mobileOpen]="sidebarMobileOpen"
+      (navigateToStep)="onSidebarNavigate($event)"
+      (closeSidebar)="onCloseSidebar()"
+    ></app-steps-sidebar>
+
+    <div class="content-wrapper">
     <app-step-navigation
       [currentStepNumber]="currentStepIndex() + 1"
       [totalSteps]="totalSteps()"
@@ -26,6 +36,13 @@
       (toggleExpand)="onToggleStep($event)"
       (subTaskToggled)="onSubTaskToggle()"
     ></app-steps-list>
+
+    <button class="sidebar-toggle-mobile" (click)="onToggleSidebar()" aria-label="Toggle sidebar">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
   </div>
 
   <app-footer
